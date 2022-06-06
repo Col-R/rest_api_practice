@@ -4,13 +4,38 @@ const cors = require ("cors");
 const _ = require("lodash");
 const { v4: uuid } = require("uuid");
 
-const app = express ();
+const app = express();
 
-app.get("/outfit", (req, res) => {
+app.use(express.json()); // middleware to support json receive
+
+app.get("/home", (req, res) => {
     const tops = ["T-Shirt", "Sweater", "Button-Up"];
     const bottoms = ["Shorts", "Pants", "Jeans"];
     const shoes = ["Sneakers", "Sandals", "Boots"];
-    res.send("Homepage working")
+    res.json({
+        tops: _.sample(tops),
+        bottoms: _.sample(bottoms),
+        shoes: _.sample(shoes)
+    })
 });
+
+app.post ("/comments" , async (req, res) => {
+    const id = uuid();
+    const content = req.body.content;
+
+    // just going to use a text file to store content for this, normally would be in a database obvi
+    if (!content) {
+        return res.sendStatus(400);
+    }
+    // in postman body-> raw -> JSONM -> {
+    //     "content": "This is a comment!"
+    // }
+    // Then sent post request.
+    // will create data directory to store post request data
+
+    await fs.mkdir("data/comments", { recursive: true });
+
+    res.sendStatus(201);
+})
 
 app.listen(3000, () => console.log("Server is up and running"))
